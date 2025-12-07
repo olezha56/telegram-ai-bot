@@ -6,10 +6,27 @@ import asyncio
 from datetime import datetime
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-from dotenv import load_dotenv
 
-# Загружаем переменные из .env
-load_dotenv()
+# ========== НАСТРОЙКА ДЛЯ RAILWAY ==========
+# Railway использует переменные окружения, а не .env файлы
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+
+# Если запускаем локально (для теста)
+if not TELEGRAM_TOKEN:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+        TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+    except:
+        pass
+
+# Проверяем токен
+if not TELEGRAM_TOKEN:
+    print("❌ ОШИБКА: TELEGRAM_TOKEN не найден!")
+    print("💡 Для Railway: добавьте переменную TELEGRAM_TOKEN в настройках проекта")
+    print("💡 Для локального запуска: создайте файл .env с TELEGRAM_TOKEN=ваш_токен")
+    raise SystemExit("Missing TELEGRAM_TOKEN")
 
 # Настройка логирования
 logging.basicConfig(
@@ -18,12 +35,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Получаем токен из .env
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-
-if not TELEGRAM_TOKEN:
-    logger.error("TELEGRAM_TOKEN не найден в .env файле!")
-    raise SystemExit("❌ Missing TELEGRAM_TOKEN")
+print("=" * 60)
+print("🤖 AI БОТ С ЭМУЛЯЦИЕЙ ИНТЕЛЛЕКТА")
+print("=" * 60)
+print(f"✅ Токен получен: {TELEGRAM_TOKEN[:10]}...")
+print("🎯 Режим: Локальный AI (без внешних API)")
+print("🌐 Хостинг: Railway")
+print("=" * 60)
 
 # Хранилище истории диалогов и настроек пользователей
 user_data = {}
@@ -401,7 +419,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 🔧 *Техническое:*
 • История хранится 10 сообщений
-• Определяются ваши интересы
+• Определяются ваши интересе
 • Адаптивные ответы
 • Эмоциональная окраска
 
@@ -575,23 +593,9 @@ def main():
     # Добавляем обработчик текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Запускаем бота
-    print("=" * 60)
-    print("🤖 AI БОТ С ЭМУЛЯЦИЕЙ ИНТЕЛЛЕКТА")
-    print("=" * 60)
-    print("🚀 Версия: 2.0 (Умная эмуляция)")
-    print(f"🔑 Токен: {TELEGRAM_TOKEN[:15]}...")
-    print("🎯 Режим: Локальный AI (без внешних API)")
-    print("💾 Память: 10 сообщений истории")
-    print("😊 Эмоции: Адаптивные настроения")
-    print("=" * 60)
-    print("📱 ИНСТРУКЦИЯ:")
-    print("1. Откройте Telegram")
-    print("2. Найдите своего бота")
-    print("3. Напишите /start")
-    print("4. Общайтесь естественно!")
-    print("=" * 60)
-    print("✅ Бот запущен и готов к общению!")
+    print("✅ Бот инициализирован. Запускаю polling...")
+    print("📱 Откройте Telegram и найдите своего бота")
+    print("⌨️ Напишите /start для начала общения")
     print("=" * 60)
 
     application.run_polling()
